@@ -18,14 +18,11 @@ public class FlowStates {
     private String stateName;
     private String blockType;
 
-    @ElementCollection
-    @CollectionTable(name = "next_state", joinColumns = @JoinColumn(name = "flow_state_id"))
-    @Column(name = "next_state")
-    private List<String> nextState;
+    private String[] nextState;
 
     private String description;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "next_state_condition", joinColumns = @JoinColumn(name = "flow_state_id"))
     private List<ConditionValue> nextStateCondition;
 

@@ -11,4 +11,6 @@ public interface FlowStatesRepositories extends JpaRepository<FlowStates, Long> 
     List<FlowStates> findByFlowId(String flowId);
 
     FlowStates findByFlowIdAndStateName(String flowId, String stateName);
+
+    FlowStates findByFlowIdAndBlockType(String flowId, String type);
 }

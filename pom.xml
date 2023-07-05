@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>jha.gaurav</groupId>
-	<artifactId>flowDigram</artifactId>
+	<artifactId>flowDiagram</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>flowDigram</name>
 	<description>Test project for Ubona</description>

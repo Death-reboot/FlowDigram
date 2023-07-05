@@ -71,18 +71,18 @@ public class FlowStatesService {
         }
         for(FlowStates f : flowStates){
             if(f.getBlockType().equals(BlockType.START.getType()) ||f.getBlockType().equals(BlockType.BLOCK.getType())){
-                if(f.getNextState() == null || f.getNextState().size() != 1){
+                if(f.getNextState() == null || f.getNextState().length != 1){
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Next Block in "+f.getStateName());
                 }
-                if(!statesName.contains(f.getNextState().get(0))){
+                if(!statesName.contains(f.getNextState()[0])){
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Next Block in "+f.getStateName()+" not found !");
                 }
             }
             if(f.getBlockType().equals(BlockType.CONDITION.getType())){
-                if(f.getNextState() == null || f.getNextState().size()<2){
+                if(f.getNextState() == null || f.getNextState().length<2){
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Next Block in "+f.getStateName()+" Conditional Block Must contain 2 or more value");
                 }
-                if(f.getNextState().size() != f.getNextStateCondition().size()){
+                if(f.getNextState().length != f.getNextStateCondition().size()){
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MissMatch in Condition and Next Stages");
                 }
                 for(String s :  f.getNextState()){
@@ -92,7 +92,7 @@ public class FlowStatesService {
                 }
             }
             if(f.getBlockType().equals(BlockType.END.getType())){
-                if(!(f.getNextState() == null || f.getNextState().isEmpty())){
+                if(!(f.getNextState() == null || f.getNextState().length==0)){
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Next Block !! End Block Can not have Next Block");
                 }
             }
@@ -104,7 +104,7 @@ public class FlowStatesService {
         String name = requestBody.get("stateName").toString();
         FlowStates current = flowStatesRepositories.findByFlowIdAndStateName(flowId,name);
         if(current.getBlockType().equals(BlockType.START.getType()) ||current.getBlockType().equals(BlockType.BLOCK.getType())){
-            return flowStatesRepositories.findByFlowIdAndStateName(flowId,current.getNextState().get(0));
+            return flowStatesRepositories.findByFlowIdAndStateName(flowId,current.getNextState()[0]);
         } else if (current.getBlockType().equals(BlockType.END.getType())) {
             return current;
         } else if (current.getBlockType().equals(BlockType.CONDITION.getType())) {
@@ -159,4 +159,7 @@ public class FlowStatesService {
         return true;
     }
 
+    public FlowStates findStartStateByFlowId(String flowId) {
+        return flowStatesRepositories.findByFlowIdAndBlockType(flowId,BlockType.START.getType());
+    }
 }
