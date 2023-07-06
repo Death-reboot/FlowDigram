@@ -110,7 +110,7 @@ public class FlowStatesService {
         } else if (current.getBlockType().equals(BlockType.CONDITION.getType())) {
             return runCondition(current,requestBody.get("input").toString());
         }else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Input");
+            return current;
         }
     }
 
@@ -145,7 +145,7 @@ public class FlowStatesService {
         if(defaultValue != null){
             return defaultValue;
         }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Input");
+        return current;
     }
     public static boolean isNumeric(String str) {
         if (str == null) {

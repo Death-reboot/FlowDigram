@@ -14,8 +14,10 @@ public class TerminalInputRunner implements CommandLineRunner {
     public void run(String... args) {
         Scanner scanner = new Scanner(System.in);
         while (true){
+            System.out.println("Please Enter flow ID : ");
             String flowId = scanner.nextLine();
             flowDigramCliServise.start(flowId);
+            System.out.println("Thanks For Calling!!!");
         }
     }
 }
