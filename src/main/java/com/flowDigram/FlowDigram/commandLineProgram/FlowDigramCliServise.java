@@ -31,9 +31,9 @@ public class FlowDigramCliServise {
         FlowStates current = flowStatesService.findStartStateByFlowId(flowId);
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("flowId",flowId);
-        while (!current.getBlockType().equals(BlockType.END.getType())){
+        while (!current.getBlockType().equals(BlockType.End.getType())){
             requestBody.put("stateName",current.getStateName());
-            if(!current.getBlockType().equals(BlockType.CONDITION.getType())){
+            if(!current.getBlockType().equals(BlockType.PlayPromptAndTakeInput.getType())){
                 System.out.println(current.getDescription());
                 current = flowStatesService.findNextFlowcharts(requestBody);
             }else {

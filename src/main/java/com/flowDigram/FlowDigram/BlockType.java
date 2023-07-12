@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum BlockType {
-    START("Start"),END("End"),BLOCK("Block"),CONDITION("Condition");
+    PlayPrompt("PlayPrompt"), End("End"),BLOCK("Block"), PlayPromptAndTakeInput("PlayPromptAndTakeInput");
     private final String type;
 }

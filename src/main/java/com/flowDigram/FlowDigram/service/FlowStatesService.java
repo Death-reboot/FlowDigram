@@ -66,11 +66,11 @@ public class FlowStatesService {
         return flowStatesRepositories.saveAll(flowStates);
     }
     public void check(List<FlowStates> flowStates , Set<String> statesName){
-        if (!flowStates.get(0).getBlockType().equals(BlockType.START.getType())) {
+        if (!flowStates.get(0).getBlockType().equals(BlockType.PlayPrompt.getType())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please Add Start Block");
         }
         for(FlowStates f : flowStates){
-            if(f.getBlockType().equals(BlockType.START.getType()) ||f.getBlockType().equals(BlockType.BLOCK.getType())){
+            if(f.getBlockType().equals(BlockType.PlayPrompt.getType()) ||f.getBlockType().equals(BlockType.BLOCK.getType())){
                 if(f.getNextState() == null || f.getNextState().length != 1){
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Next Block in "+f.getStateName());
                 }
@@ -78,7 +78,7 @@ public class FlowStatesService {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Next Block in "+f.getStateName()+" not found !");
                 }
             }
-            if(f.getBlockType().equals(BlockType.CONDITION.getType())){
+            if(f.getBlockType().equals(BlockType.PlayPromptAndTakeInput.getType())){
                 if(f.getNextState() == null || f.getNextState().length<2){
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Next Block in "+f.getStateName()+" Conditional Block Must contain 2 or more value");
                 }
@@ -91,7 +91,7 @@ public class FlowStatesService {
                     }
                 }
             }
-            if(f.getBlockType().equals(BlockType.END.getType())){
+            if(f.getBlockType().equals(BlockType.End.getType())){
                 if(!(f.getNextState() == null || f.getNextState().length==0)){
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Next Block !! End Block Can not have Next Block");
                 }
@@ -103,11 +103,11 @@ public class FlowStatesService {
         String flowId = requestBody.get("flowId").toString();
         String name = requestBody.get("stateName").toString();
         FlowStates current = flowStatesRepositories.findByFlowIdAndStateName(flowId,name);
-        if(current.getBlockType().equals(BlockType.START.getType()) ||current.getBlockType().equals(BlockType.BLOCK.getType())){
+        if(current.getBlockType().equals(BlockType.PlayPrompt.getType()) ||current.getBlockType().equals(BlockType.BLOCK.getType())){
             return flowStatesRepositories.findByFlowIdAndStateName(flowId,current.getNextState()[0]);
-        } else if (current.getBlockType().equals(BlockType.END.getType())) {
+        } else if (current.getBlockType().equals(BlockType.End.getType())) {
             return current;
-        } else if (current.getBlockType().equals(BlockType.CONDITION.getType())) {
+        } else if (current.getBlockType().equals(BlockType.PlayPromptAndTakeInput.getType())) {
             return runCondition(current,requestBody.get("input").toString());
         }else {
             return current;
@@ -152,7 +152,7 @@ public class FlowStatesService {
             return false;
         }
         try {
-            int number = Integer.parseInt(str);
+            Integer.parseInt(str);
         } catch (NumberFormatException e) {
             return false;
         }
@@ -160,6 +160,6 @@ public class FlowStatesService {
     }
 
     public FlowStates findStartStateByFlowId(String flowId) {
-        return flowStatesRepositories.findByFlowIdAndBlockType(flowId,BlockType.START.getType());
+        return flowStatesRepositories.findByFlowIdAndBlockType(flowId,BlockType.PlayPrompt.getType());
     }
 }
