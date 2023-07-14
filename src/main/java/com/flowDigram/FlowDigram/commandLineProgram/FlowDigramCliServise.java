@@ -42,7 +42,8 @@ public class FlowDigramCliServise {
                 System.out.println(current.getPrompt());
             }
             requestBody.put("stateName",current.getStateName());
-            if(current.getBlockType().equals(BlockType.PlayPrompt.getType()) ||
+            if(current.getBlockType().equals(BlockType.Start.getType()) ||
+                    current.getBlockType().equals(BlockType.PlayPrompt.getType()) ||
                     current.getBlockType().equals(BlockType.ConnectToAgent.getType()) ||
                     current.getBlockType().equals(BlockType.ASRService.getType())){
 //                System.out.println(current.getDescription());

@@ -8,7 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @AllArgsConstructor
 @Service
@@ -67,8 +71,11 @@ public class FlowStatesService {
     }
     public void check(List<FlowStates> flowStates , Set<String> statesName){
         for(FlowStates f : flowStates){
-            if(f.getBlockType().equals(BlockType.PlayPrompt.getType()) || f.getBlockType().equals(BlockType.ConnectToAgent.getType())
-                    || f.getBlockType().equals(BlockType.ASRService.getType()) || f.getBlockType().equals(BlockType.API.getType())){
+            if(f.getBlockType().equals(BlockType.Start.getType()) ||
+                    f.getBlockType().equals(BlockType.PlayPrompt.getType()) ||
+                    f.getBlockType().equals(BlockType.ConnectToAgent.getType()) ||
+                    f.getBlockType().equals(BlockType.ASRService.getType()) ||
+                    f.getBlockType().equals(BlockType.API.getType())){
                 if(f.getNextState() == null || f.getNextState().length != 1){
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Next Block in "+f.getStateName());
                 }
@@ -101,8 +108,11 @@ public class FlowStatesService {
         String flowId = requestBody.get("flowId").toString();
         String name = requestBody.get("stateName").toString();
         FlowStates current = flowStatesRepositories.findByFlowIdAndStateName(flowId,name);
-        if(current.getBlockType().equals(BlockType.PlayPrompt.getType()) || current.getBlockType().equals(BlockType.ConnectToAgent.getType())
-                || current.getBlockType().equals(BlockType.ASRService.getType()) || current.getBlockType().equals(BlockType.API.getType())){
+        if(current.getBlockType().equals(BlockType.Start.getType()) ||
+                current.getBlockType().equals(BlockType.PlayPrompt.getType()) ||
+                current.getBlockType().equals(BlockType.ConnectToAgent.getType()) ||
+                current.getBlockType().equals(BlockType.ASRService.getType()) ||
+                current.getBlockType().equals(BlockType.API.getType())){
             return flowStatesRepositories.findByFlowIdAndStateName(flowId,current.getNextState()[0]);
         } else if (current.getBlockType().equals(BlockType.End.getType())) {
             return current;
@@ -123,8 +133,15 @@ public class FlowStatesService {
                     return flowStatesRepositories.findByFlowIdAndStateName(current.getFlowId(), c.getState());
                 }
             } else if (c.getCondition().equals("lengthOf") && isNumeric(c.getValue())) {
-                if (input.length() == Integer.parseInt(c.getValue()))
+                if (input.length() == Integer.parseInt(c.getValue())){
+                    if ((input.length() == 6 || input.length() == 8) && !checkValidDate(input)){
+                        break;
+                    }
+                    if (input.length() == 10 && !checkValidMobile(input)){
+                        break;
+                    }
                     return flowStatesRepositories.findByFlowIdAndStateName(current.getFlowId(), c.getState());
+                }
             }
         }
         if(defaultValue != null){
@@ -132,6 +149,33 @@ public class FlowStatesService {
         }
         return current;
     }
+
+    private boolean checkValidMobile(String input) {
+        String regex = "^(\\+\\d{1,3})?\\d{10}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(input);
+        return matcher.matches();
+    }
+
+    private boolean checkValidDate(String input) {
+        String format = "ddMMyy";
+        if (input.length() == 8) {
+            format = "ddMMyyyy";
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+        dateFormat.setLenient(false); // Set lenient to false to enforce strict date parsing
+
+        try {
+            Date date = dateFormat.parse(input);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM yyyy");
+            System.out.println("The date you have entered is " +outputFormat.format(date));
+            return true;
+        } catch (ParseException e) {
+            System.out.println("Invalid date Plese try again!!");
+            return false;
+        }
+    }
+
     public static boolean isNumeric(String str) {
         if (str == null) {
             return false;
@@ -145,6 +189,6 @@ public class FlowStatesService {
     }
 
     public FlowStates findStartStateByFlowId(String flowId) {
-        return flowStatesRepositories.findByFlowIdAndBlockType(flowId,BlockType.PlayPrompt.getType());
+        return flowStatesRepositories.findByFlowIdAndBlockType(flowId,BlockType.Start.getType());
     }
 }
