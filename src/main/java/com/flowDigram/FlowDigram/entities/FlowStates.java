@@ -16,7 +16,7 @@ public class FlowStates {
     private String flowId;
     private String stateName;
     private String blockType;
-
+    private String prompt;
     private String[] nextState;
 
     private String description;
